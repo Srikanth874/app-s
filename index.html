@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student SGPA App</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(135deg, #4f46e5, #9333ea);
+  padding: 25px;
+}
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+}
+
+.header {
+  text-align: center;
+  color: white;
+  margin-bottom: 25px;
+}
+
+.header h1 {
+  font-size: 42px;
+  margin: 0;
+}
+
+.header p {
+  margin-top: 8px;
+  opacity: 0.9;
+}
+
+.card {
+  background: white;
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  margin-bottom: 20px;
+}
+
+.input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  outline: none;
+}
+
+.input:focus {
+  border-color: #4f46e5;
+}
+
+.mark-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+button {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-add { background: #22c55e; color: white; }
+.btn-remove { background: #ef4444; color: white; }
+.btn-load { background: #3b82f6; color: white; }
+.btn-clear { background: #111827; color: white; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+th {
+  background: #f3f4f6;
+}
+
+.message {
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 10px;
+  display: none;
+}
+
+.success { background: #dcfce7; color: #166534; }
+.error { background: #fee2e2; color: #991b1b; }
+
+.search-box {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  margin-bottom: 12px;
+}
+
+.small-note {
+  font-size: 13px;
+  opacity: 0.8;
+  margin-top: 8px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h1>🎓 SGPA Calculator</h1>
+    <p>Add student details, any number of marks, and auto-calculate SGPA</p>
+  </div>
+
+  <div class="card">
+    <h3>Add Student</h3>
+
+    <input id="name" class="input" placeholder="Name">
+    <input id="usn" class="input" placeholder="USN">
+    <input id="sem" class="input" type="number" placeholder="Semester">
+    <input id="section" class="input" placeholder="Section">
+
+    <div id="marks"></div>
+
+    <button onclick="addField()" class="btn-load">+ Add Subject</button>
+    <button onclick="save()" class="btn-add">Save</button>
+    <button onclick="clearAll()" class="btn-clear">Clear</button>
+
+    <div id="msg" class="message"></div>
+
+    <div class="small-note">
+      Fill all details, add subject marks, then save.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Search / Load Students</h3>
+
+    <input id="search" class="search-box" placeholder="Search by name, USN, or section..." oninput="load()">
+    <button onclick="load()" class="btn-load">Load Students</button>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>USN</th>
+          <th>Sem</th>
+          <th>Section</th>
+          <th>Marks</th>
+          <th>SGPA</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="data"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+function show(msg, type){
+  let box = document.getElementById("msg");
+  box.innerText = msg;
+  box.className = "message " + type;
+  box.style.display = "block";
+}
+
+function addField(val = ""){
+  let div = document.createElement("div");
+  div.className = "mark-row";
+  div.innerHTML = `
+    <input class="input mark" type="number" placeholder="Enter mark" value="${val}">
+    <button class="btn-remove" onclick="this.parentElement.remove()">X</button>
+  `;
+  document.getElementById("marks").appendChild(div);
+}
+
+function clearAll(){
+  document.getElementById("name").value = "";
+  document.getElementById("usn").value = "";
+  document.getElementById("sem").value = "";
+  document.getElementById("section").value = "";
+  document.getElementById("search").value = "";
+  document.getElementById("marks").innerHTML = "";
+  document.getElementById("data").innerHTML = "";
+  document.getElementById("msg").style.display = "none";
+  addField();
+}
+
+function getMarks(){
+  let arr = [];
+  document.querySelectorAll(".mark").forEach(i => {
+    if (i.value !== "") arr.push(Number(i.value));
+  });
+  return arr;
+}
+
+async function save(){
+  let name = document.getElementById("name").value.trim();
+  let usn = document.getElementById("usn").value.trim();
+  let sem = document.getElementById("sem").value.trim();
+  let section = document.getElementById("section").value.trim();
+  let marks = getMarks();
+
+  if (!name || !usn || !sem || !section || marks.length === 0) {
+    show("Fill all fields", "error");
+    return;
+  }
+
+  let res = await fetch("http://localhost:5000/api/students", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, usn, sem, section, marks })
+  });
+
+  let txt = await res.text();
+  show(txt, res.ok ? "success" : "error");
+
+  if (res.ok) {
+    load();
+  }
+}
+
+async function load(){
+  let search = document.getElementById("search").value.trim();
+  let res = await fetch(`http://localhost:5000/api/students?search=${encodeURIComponent(search)}`);
+  let data = await res.json();
+
+  let tbody = document.getElementById("data");
+  tbody.innerHTML = "";
+
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="7">No students found</td></tr>`;
+    return;
+  }
+
+  data.forEach(d => {
+    let row = `
+    <tr>
+      <td>${d.name}</td>
+      <td>${d.usn}</td>
+      <td>${d.sem}</td>
+      <td>${d.section}</td>
+      <td>${Array.isArray(d.marks) ? d.marks.join(", ") : "-"}</td>
+      <td>${d.sgpa}</td>
+      <td><button class="btn-remove" onclick="deleteStudent(${d.id})">Delete</button></td>
+    </tr>`;
+    tbody.innerHTML += row;
+  });
+}
+
+async function deleteStudent(id){
+  if (!confirm("Delete this student?")) return;
+
+  let res = await fetch(`http://localhost:5000/api/students/${id}`, {
+    method: "DELETE"
+  });
+
+  let txt = await res.text();
+  show(txt, res.ok ? "success" : "error");
+  load();
+}
+
+addField();
+</script>
+
+</body>
+</html>
