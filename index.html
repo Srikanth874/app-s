@@ -4,281 +4,700 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Student SGPA App</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 
 <style>
-* { box-sizing: border-box; }
+:root {
+  --bg: #0a0a0f;
+  --surface: #13131a;
+  --surface2: #1c1c27;
+  --border: rgba(255,255,255,0.07);
+  --border-hover: rgba(255,255,255,0.14);
+  --accent: #7c6dfa;
+  --accent2: #a78bfa;
+  --accent-glow: rgba(124,109,250,0.18);
+  --text: #e8e8f0;
+  --text-muted: #6b6b80;
+  --text-soft: #9898b0;
+  --red: #f87171;
+  --red-bg: rgba(248,113,113,0.1);
+  --green: #4ade80;
+  --green-bg: rgba(74,222,128,0.1);
+  --radius: 14px;
+  --radius-sm: 8px;
+  --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  margin: 0;
-  font-family: "Segoe UI", sans-serif;
-  background: linear-gradient(135deg, #4f46e5, #9333ea);
-  padding: 25px;
+  font-family: "DM Sans", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 32px 20px 60px;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before, body::after {
+  content: "";
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+body::before {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(124,109,250,0.12) 0%, transparent 70%);
+  top: -100px; right: -100px;
+}
+body::after {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(167,139,250,0.08) 0%, transparent 70%);
+  bottom: 0; left: -80px;
 }
 
 .container {
-  max-width: 1100px;
+  max-width: 860px;
   margin: auto;
+  position: relative;
+  z-index: 1;
 }
 
 .header {
   text-align: center;
-  color: white;
-  margin-bottom: 25px;
+  margin-bottom: 40px;
+  animation: fadeDown 0.6s ease both;
+}
+
+.header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent-glow);
+  border: 1px solid rgba(124,109,250,0.25);
+  border-radius: 99px;
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent2);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
 }
 
 .header h1 {
-  font-size: 42px;
-  margin: 0;
+  font-family: "Syne", sans-serif;
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #e8e8f0 30%, var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.1;
+  margin-bottom: 10px;
 }
 
 .header p {
-  margin-top: 8px;
-  opacity: 0.9;
+  color: var(--text-muted);
+  font-size: 15px;
+  font-weight: 300;
 }
 
 .card {
-  background: white;
-  border-radius: 18px;
-  padding: 22px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px;
   margin-bottom: 20px;
+  transition: border-color var(--transition);
+  animation: fadeUp 0.5s ease both;
+}
+.card:nth-child(2) { animation-delay: 0.05s; }
+.card:nth-child(3) { animation-delay: 0.1s; }
+.card:hover { border-color: var(--border-hover); }
+
+.card-title {
+  font-family: "Syne", sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-title .icon {
+  width: 32px; height: 32px;
+  background: var(--accent-glow);
+  border: 1px solid rgba(124,109,250,0.2);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+}
+
+.input-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .input {
   width: 100%;
-  padding: 12px;
-  margin-bottom: 10px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
+  padding: 11px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
   outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.input::placeholder { color: var(--text-muted); }
+.input:focus {
+  border-color: rgba(124,109,250,0.5);
+  box-shadow: 0 0 0 3px rgba(124,109,250,0.1);
 }
 
-.input:focus {
-  border-color: #4f46e5;
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 20px 0;
+}
+
+.marks-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.marks-label {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+#marks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .mark-row {
   display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 8px;
   align-items: center;
+  animation: slideIn 0.25s ease both;
+}
+
+.subject-label {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--accent-glow);
+  border: 1px solid rgba(124,109,250,0.2);
+  color: var(--accent2);
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 button {
-  padding: 10px 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 18px;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-weight: bold;
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all var(--transition);
+}
+button:active { opacity: 0.82; transform: scale(0.98); }
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 4px 14px rgba(124,109,250,0.3);
+}
+.btn-primary:hover {
+  background: #8b7ffb;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(124,109,250,0.4);
 }
 
-.btn-add { background: #22c55e; color: white; }
-.btn-remove { background: #ef4444; color: white; }
-.btn-load { background: #3b82f6; color: white; }
-.btn-clear { background: #111827; color: white; }
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
+.btn-add {
+  background: rgba(74,222,128,0.12);
+  color: var(--green);
+  border: 1px solid rgba(74,222,128,0.2);
+  padding: 8px 14px;
+  font-size: 13px;
 }
+.btn-add:hover { background: rgba(74,222,128,0.22); }
 
-th, td {
-  padding: 10px;
-  border-bottom: 1px solid #eee;
-  text-align: left;
+.btn-remove {
+  background: rgba(248,113,113,0.1);
+  color: var(--red);
+  border: 1px solid rgba(248,113,113,0.15);
+  padding: 7px 10px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  font-size: 13px;
 }
+.btn-remove:hover { background: rgba(248,113,113,0.22); }
 
-th {
-  background: #f3f4f6;
+.btn-ghost {
+  background: var(--surface2);
+  color: var(--text-soft);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { border-color: var(--border-hover); color: var(--text); }
+
+.btn-load {
+  background: rgba(99,179,237,0.12);
+  color: #63b3ed;
+  border: 1px solid rgba(99,179,237,0.2);
+}
+.btn-load:hover { background: rgba(99,179,237,0.22); transform: translateY(-1px); }
+
+.btn-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+  flex-wrap: wrap;
 }
 
 .message {
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 10px;
+  padding: 11px 14px;
+  margin-top: 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
   display: none;
 }
-
-.success { background: #dcfce7; color: #166534; }
-.error { background: #fee2e2; color: #991b1b; }
-
-.search-box {
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  margin-bottom: 12px;
-}
+.success { background: var(--green-bg); color: var(--green); border: 1px solid rgba(74,222,128,0.2); }
+.error   { background: var(--red-bg);   color: var(--red);   border: 1px solid rgba(248,113,113,0.2); }
 
 .small-note {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 12px;
+}
+
+.search-wrap { position: relative; margin-bottom: 14px; }
+.search-icon {
+  position: absolute;
+  left: 12px; top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--text-muted);
+}
+.search-box {
+  width: 100%;
+  padding: 11px 14px 11px 38px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.search-box::placeholder { color: var(--text-muted); }
+.search-box:focus {
+  border-color: rgba(124,109,250,0.5);
+  box-shadow: 0 0 0 3px rgba(124,109,250,0.1);
+}
+
+.table-wrap {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin-top: 16px;
+}
+table { width: 100%; border-collapse: collapse; }
+th {
+  background: var(--surface2);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 12px 14px;
   font-size: 13px;
-  opacity: 0.8;
-  margin-top: 8px;
+  color: var(--text-soft);
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tbody tr { transition: background var(--transition); }
+tbody tr:hover td { background: rgba(255,255,255,0.02); }
+td:first-child { color: var(--text); font-weight: 500; }
+
+.sgpa-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.marks-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.chip {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text-soft);
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-size: 11px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 36px 20px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+.empty-icon { font-size: 28px; margin-bottom: 8px; opacity: 0.5; }
+
+.spinner {
+  display: inline-block;
+  width: 13px; height: 13px;
+  border: 2px solid rgba(255,255,255,0.25);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@media (max-width: 540px) {
+  .input-group { grid-template-columns: 1fr; }
+  .btn-row { flex-direction: column; }
 }
 </style>
 </head>
 
 <body>
-
 <div class="container">
 
   <div class="header">
-    <h1>🎓 SGPA Calculator</h1>
+    <div class="header-badge">🎓 Academic Tools</div>
+    <h1>SGPA Calculator</h1>
     <p>Add student details, any number of marks, and auto-calculate SGPA</p>
   </div>
 
+  <!-- Add Student -->
   <div class="card">
-    <h3>Add Student</h3>
+    <div class="card-title">
+      <span class="icon">✏️</span>
+      Add Student
+    </div>
 
-    <input id="name" class="input" placeholder="Name">
-    <input id="usn" class="input" placeholder="USN">
-    <input id="sem" class="input" type="number" placeholder="Semester">
-    <input id="section" class="input" placeholder="Section">
+    <div class="input-group">
+      <input id="name"    class="input" placeholder="Full name">
+      <input id="usn"     class="input" placeholder="USN">
+    </div>
+    <div class="input-group">
+      <input id="sem"     class="input" type="number" min="1" max="8" placeholder="Semester (e.g. 3)">
+      <input id="section" class="input" placeholder="Section (e.g. A)">
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="marks-header">
+      <span class="marks-label">Subject Marks</span>
+      <button type="button" class="btn-add" id="add-subject-btn">+ Add Subject</button>
+    </div>
 
     <div id="marks"></div>
 
-    <button onclick="addField()" class="btn-load">+ Add Subject</button>
-    <button onclick="save()" class="btn-add">Save</button>
-    <button onclick="clearAll()" class="btn-clear">Clear</button>
+    <div class="btn-row">
+      <button type="button" class="btn-primary" id="save-btn">💾 Save Student</button>
+      <button type="button" class="btn-ghost"   id="clear-btn">↺ Clear</button>
+    </div>
 
     <div id="msg" class="message"></div>
-
-    <div class="small-note">
-      Fill all details, add subject marks, then save.
-    </div>
+    <p class="small-note">Fill all details and at least one subject mark before saving.</p>
   </div>
 
+  <!-- Search / Load -->
   <div class="card">
-    <h3>Search / Load Students</h3>
+    <div class="card-title">
+      <span class="icon">🔍</span>
+      Search / Load Students
+    </div>
 
-    <input id="search" class="search-box" placeholder="Search by name, USN, or section..." oninput="load()">
-    <button onclick="load()" class="btn-load">Load Students</button>
+    <div class="search-wrap">
+      <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input id="search" class="search-box" placeholder="Search by name, USN, or section...">
+    </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>USN</th>
-          <th>Sem</th>
-          <th>Section</th>
-          <th>Marks</th>
-          <th>SGPA</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="data"></tbody>
-    </table>
+    <button type="button" class="btn-load" id="load-btn">↻ Load Students</button>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th><th>USN</th><th>Sem</th><th>Section</th>
+            <th>Marks</th><th>SGPA</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="data">
+          <tr><td colspan="7">
+            <div class="empty-state">
+              <div class="empty-icon">📋</div>
+              Click "Load Students" to view records
+            </div>
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
 </div>
 
 <script>
-function show(msg, type){
-  let box = document.getElementById("msg");
-  box.innerText = msg;
+const BASE = "http://localhost:5000";
+let subjectCount = 0;
+
+/* ── Wire up all buttons via JS (no inline onclick) ── */
+document.getElementById("add-subject-btn").addEventListener("click", addField);
+document.getElementById("save-btn").addEventListener("click", save);
+document.getElementById("clear-btn").addEventListener("click", clearAll);
+document.getElementById("load-btn").addEventListener("click", load);
+document.getElementById("search").addEventListener("input", load);
+
+/* ── Toast ── */
+function show(msg, type) {
+  const box = document.getElementById("msg");
+  box.textContent = msg;
   box.className = "message " + type;
   box.style.display = "block";
+  clearTimeout(box._t);
+  box._t = setTimeout(() => { box.style.display = "none"; }, 4000);
 }
 
-function addField(val = ""){
-  let div = document.createElement("div");
-  div.className = "mark-row";
-  div.innerHTML = `
-    <input class="input mark" type="number" placeholder="Enter mark" value="${val}">
-    <button class="btn-remove" onclick="this.parentElement.remove()">X</button>
-  `;
-  document.getElementById("marks").appendChild(div);
+/* ── Add a subject mark row ── */
+function addField(val) {
+  val = (typeof val === "string" || typeof val === "number") ? val : "";
+  subjectCount++;
+
+  const row = document.createElement("div");
+  row.className = "mark-row";
+
+  const lbl = document.createElement("span");
+  lbl.className = "subject-label";
+  lbl.textContent = "S" + subjectCount;
+
+  const inp = document.createElement("input");
+  inp.type = "number";
+  inp.className = "input mark";
+  inp.placeholder = "Mark (0 – 100)";
+  inp.min = "0";
+  inp.max = "100";
+  inp.value = val;
+  inp.style.flex = "1";
+
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "btn-remove";
+  btn.textContent = "✕";
+  btn.addEventListener("click", function () {
+    row.style.opacity = "0";
+    row.style.transform = "translateX(-10px)";
+    row.style.transition = "opacity 0.2s, transform 0.2s";
+    setTimeout(() => {
+      row.remove();
+      renumber();
+    }, 200);
+  });
+
+  row.appendChild(lbl);
+  row.appendChild(inp);
+  row.appendChild(btn);
+  document.getElementById("marks").appendChild(row);
 }
 
-function clearAll(){
-  document.getElementById("name").value = "";
-  document.getElementById("usn").value = "";
-  document.getElementById("sem").value = "";
-  document.getElementById("section").value = "";
-  document.getElementById("search").value = "";
-  document.getElementById("marks").innerHTML = "";
-  document.getElementById("data").innerHTML = "";
-  document.getElementById("msg").style.display = "none";
-  addField();
+function renumber() {
+  const labels = document.querySelectorAll("#marks .subject-label");
+  labels.forEach((el, i) => { el.textContent = "S" + (i + 1); });
+  subjectCount = labels.length;
 }
 
-function getMarks(){
-  let arr = [];
-  document.querySelectorAll(".mark").forEach(i => {
-    if (i.value !== "") arr.push(Number(i.value));
+function getMarks() {
+  const arr = [];
+  document.querySelectorAll("#marks .mark").forEach(inp => {
+    const v = inp.value.trim();
+    if (v !== "") arr.push(Number(v));
   });
   return arr;
 }
 
-async function save(){
-  let name = document.getElementById("name").value.trim();
-  let usn = document.getElementById("usn").value.trim();
-  let sem = document.getElementById("sem").value.trim();
-  let section = document.getElementById("section").value.trim();
-  let marks = getMarks();
+function clearAll() {
+  ["name","usn","sem","section","search"].forEach(id => {
+    document.getElementById(id).value = "";
+  });
+  document.getElementById("marks").innerHTML = "";
+  document.getElementById("msg").style.display = "none";
+  document.getElementById("data").innerHTML =
+    `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📋</div>Click "Load Students" to view records</div></td></tr>`;
+  subjectCount = 0;
+  addField();
+}
 
-  if (!name || !usn || !sem || !section || marks.length === 0) {
-    show("Fill all fields", "error");
-    return;
+/* ── Save ── */
+async function save() {
+  const name    = document.getElementById("name").value.trim();
+  const usn     = document.getElementById("usn").value.trim();
+  const sem     = document.getElementById("sem").value.trim();
+  const section = document.getElementById("section").value.trim();
+  const marks   = getMarks();
+
+  if (!name || !usn || !sem || !section) {
+    show("⚠️ Please fill Name, USN, Semester and Section.", "error"); return;
+  }
+  if (marks.length === 0) {
+    show("⚠️ Add at least one subject mark.", "error"); return;
+  }
+  if (marks.some(m => isNaN(m) || m < 0 || m > 100)) {
+    show("⚠️ Marks must be between 0 and 100.", "error"); return;
   }
 
-  let res = await fetch("http://localhost:5000/api/students", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, usn, sem, section, marks })
-  });
+  const btn = document.getElementById("save-btn");
+  btn.innerHTML = `<span class="spinner"></span> Saving…`;
+  btn.disabled = true;
 
-  let txt = await res.text();
-  show(txt, res.ok ? "success" : "error");
+  try {
+    const res = await fetch(`${BASE}/api/students`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, usn, sem: Number(sem), section, marks })
+    });
+    const txt = await res.text();
+    show(res.ok ? "✅ " + txt : "❌ " + txt, res.ok ? "success" : "error");
+    if (res.ok) {
+      ["name","usn","sem","section"].forEach(id => document.getElementById(id).value = "");
+      document.getElementById("marks").innerHTML = "";
+      subjectCount = 0;
+      addField();
+      load();
+    }
+  } catch (e) {
+    show("❌ Cannot reach server on port 5000. Is node index.js running?", "error");
+  }
 
-  if (res.ok) {
+  btn.innerHTML = "💾 Save Student";
+  btn.disabled = false;
+}
+
+/* ── Load / search ── */
+async function load() {
+  const search = document.getElementById("search").value.trim();
+  const tbody  = document.getElementById("data");
+
+  try {
+    const res  = await fetch(`${BASE}/api/students?search=${encodeURIComponent(search)}`);
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+
+    tbody.innerHTML = "";
+
+    if (!data.length) {
+      tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        ${search ? "No students matched &ldquo;" + search + "&rdquo;" : "No students yet — add one above!"}
+      </div></td></tr>`;
+      return;
+    }
+
+    data.forEach((d, idx) => {
+      const sgpa      = parseFloat(d.sgpa);
+      const clr       = sgpa >= 8 ? "#4ade80" : sgpa >= 6 ? "#fbbf24" : "#f87171";
+      const bg        = sgpa >= 8 ? "rgba(74,222,128,0.12)" : sgpa >= 6 ? "rgba(251,191,36,0.12)" : "rgba(248,113,113,0.12)";
+      const marksHtml = Array.isArray(d.marks) && d.marks.length
+        ? d.marks.map(m => `<span class="chip">${m}</span>`).join("")
+        : "<span style='color:var(--text-muted)'>—</span>";
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${d.name}</td>
+        <td style="font-family:monospace;font-size:12px">${d.usn}</td>
+        <td>${d.sem}</td>
+        <td>${d.section}</td>
+        <td><div class="marks-chips">${marksHtml}</div></td>
+        <td><span class="sgpa-badge" style="background:${bg};color:${clr};border:1px solid ${clr}40">${sgpa.toFixed(2)}</span></td>
+        <td></td>`;
+
+      const delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "btn-remove";
+      delBtn.textContent = "🗑";
+      delBtn.title = "Delete student";
+      delBtn.addEventListener("click", () => deleteStudent(d.id));
+      tr.querySelector("td:last-child").appendChild(delBtn);
+
+      tbody.appendChild(tr);
+    });
+
+  } catch (e) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state" style="color:var(--red)">
+      ❌ Cannot reach server on port 5000. Make sure <code>node index.js</code> is running.
+    </div></td></tr>`;
+  }
+}
+
+/* ── Delete ── */
+async function deleteStudent(id) {
+  if (!confirm("Delete this student permanently?")) return;
+  try {
+    const res = await fetch(`${BASE}/api/students/${id}`, { method: "DELETE" });
+    const txt = await res.text();
+    show(res.ok ? "✅ " + txt : "❌ " + txt, res.ok ? "success" : "error");
     load();
+  } catch (e) {
+    show("❌ Cannot reach server.", "error");
   }
 }
 
-async function load(){
-  let search = document.getElementById("search").value.trim();
-  let res = await fetch(`http://localhost:5000/api/students?search=${encodeURIComponent(search)}`);
-  let data = await res.json();
-
-  let tbody = document.getElementById("data");
-  tbody.innerHTML = "";
-
-  if (!data.length) {
-    tbody.innerHTML = `<tr><td colspan="7">No students found</td></tr>`;
-    return;
-  }
-
-  data.forEach(d => {
-    let row = `
-    <tr>
-      <td>${d.name}</td>
-      <td>${d.usn}</td>
-      <td>${d.sem}</td>
-      <td>${d.section}</td>
-      <td>${Array.isArray(d.marks) ? d.marks.join(", ") : "-"}</td>
-      <td>${d.sgpa}</td>
-      <td><button class="btn-remove" onclick="deleteStudent(${d.id})">Delete</button></td>
-    </tr>`;
-    tbody.innerHTML += row;
-  });
-}
-
-async function deleteStudent(id){
-  if (!confirm("Delete this student?")) return;
-
-  let res = await fetch(`http://localhost:5000/api/students/${id}`, {
-    method: "DELETE"
-  });
-
-  let txt = await res.text();
-  show(txt, res.ok ? "success" : "error");
-  load();
-}
-
+/* ── Init ── */
 addField();
 </script>
-
 </body>
 </html>
